@@ -13,7 +13,7 @@ script/plugin install git://github.com/ragaskar/jazzhands.git
 Example
 =======
 
-rake jazzhands
+rake javascript
 rake spec
 
 Big thanks to Christian Williams for his help with Rhino integration.
