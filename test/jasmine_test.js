@@ -5,9 +5,9 @@ var console = {
 };
 
 var runJasmineTests = function () {
-  window.location = 'vendor/plugins/jasmine/test/bootstrap.html';
+  window.location = '../jasmine/test/bootstrap.html';
   jasmine.include = function(filename) {
-    return eval(readFile('vendor/plugins/jasmine/test/' + filename));
+    return eval(readFile('../jasmine/test/' + filename));
   };
 
   window.runTests();
@@ -16,7 +16,7 @@ var runJasmineTests = function () {
   print(document.getElementById('fails').innerHTML);
 
 };
-load('vendor/plugins/env-js/dist/env.rhino.js');
+load('../env-js/dist/env.rhino.js');
 __env__.scriptTypes = {
   "text/javascript"   :true,
   "text/envjs"        :true
