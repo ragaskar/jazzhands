@@ -1,0 +1,20 @@
+Jazz-hands
+==========
+
+Installation
+============
+
+script/plugin install git://github.com/thatcher/env-js.git
+script/plugin install git://github.com/pivotal/jasmine.git
+script/plugin install git://github.com/ragaskar/jazzhands.git 
+
+
+Example
+=======
+
+rake jazzhands
+rake spec
+
+Big thanks to Christian Williams for his help with Rhino integration.
+
+Copyright (c) 2009 Rajan Agaskar, released under the MIT license
