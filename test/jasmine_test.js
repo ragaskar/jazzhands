@@ -17,7 +17,7 @@ var runJasmineTests = function () {
 
 };
 load('../env-js/dist/env.rhino.js');
-__env__.scriptTypes = {
+Envjs.scriptTypes = {
   "text/javascript"   :true,
   "text/envjs"        :true
 };
