@@ -1,4 +1,4 @@
-if (!File.exist?('spec/javascript'))
-  Dir.mkdir('spec/javascript')
-end
-File.copy('vendor/plugins/jazzhands/templates/*', 'spec/javascript/')
+Dir.mkdir('spec') unless File.exist?('spec')
+Dir.mkdir('spec/javascipt') unless File.exist?('spec/javascript')
+File.copy('vendor/plugins/jazzhands/templates/jasmine_spec.rb', 'spec/javascript/')
+File.copy('vendor/plugins/jazzhands/templates/example_test.js', 'spec/javascript/')
