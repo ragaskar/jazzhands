@@ -4,6 +4,7 @@ Jazz-hands
 Installation
 ============
 
+script/generate rspec
 script/plugin install git://github.com/thatcher/env-js.git
 script/plugin install git://github.com/pivotal/jasmine.git
 script/plugin install git://github.com/ragaskar/jazzhands.git 
