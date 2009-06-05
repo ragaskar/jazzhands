@@ -1,14 +1,15 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../spec_helper")
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'rubygems'
 
 class RhinoConnection
   require 'socket'
-  if (!ActiveSupport::JSON)
+  if (defined? ActiveSupport::JSON)
     #way to go, guys, way to go! 
     require 'json'
   end
 
   def json_parse(string)
-    if (ActiveSupport::JSON)
+    if (defined? ActiveSupport::JSON)
       return ActiveSupport::JSON.decode(string)
     else
       return JSON.parse(string)
@@ -23,7 +24,9 @@ class RhinoConnection
   end
 
   def connect
-    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazzhands/lib/run_tests_for_rspec.js")
+    app_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+    Dir.chdir(app_path)
+    @stdin, @stdout, @stderr = Open3.popen3("java -jar lib/env-js/rhino/js.jar lib/jazz-hands/dist/run_tests_for_rspec.js")
 
   end
 
@@ -42,6 +45,7 @@ class RhinoConnection
 
   def eval_ignore_result(js)
     @stdin.puts(js)
+
     result = read
     status, result = result.split(' ')
     result = URI.unescape(result)
@@ -64,6 +68,7 @@ class RhinoConnection
     while true do
       raw_str = @stdout.gets
       return nil unless raw_str
+      puts raw_str[11..-1] if raw_str =~ /^!!!print!!!/ 
       return raw_str[11..-1] if raw_str =~ /^!!!magic!!!/
     end
   end
@@ -78,17 +83,9 @@ class RemoteResults
   require 'open3'
 
   def initialize(run_server = true)
-    Dir.chdir("#{File.dirname(__FILE__)}/../..")
     if (run_server)
-#      ./script/server
-      ENV['RAILS_ENV']='test'
-      @stdin, @stdout, @stderr = Open3.popen3("./script/server")
-#      while true do
-#        p @stderr.gets
-#        raw_str = @stdout.gets
-#        p raw_str
-#        return nil unless raw_str
-#      end
+      # ENV['RAILS_ENV']='test'
+      # @stdin, @stdout, @stderr = Open3.popen3("./script/server")
     end
 
     @rhino_connection = RhinoConnection.new
@@ -147,7 +144,11 @@ class RemoteResults
 
   def report_spec(spec_id)
     spec_results = results_for(spec_id)
-    Spec::Expectations.fail_with(spec_results['messages'].join('\n')) if (spec_results['result'] != 'passed')     
+
+    spec_results['messages'].each do |message|
+      p message unless message =~ /^Expectation \d+/
+    end
+    Spec::Expectations.fail_with(spec_results['messages'].join("\n")) if (spec_results['result'] != 'passed')
   end
 
   private
