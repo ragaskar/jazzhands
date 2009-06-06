@@ -26,8 +26,8 @@ class RhinoConnection
   def connect
     app_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     Dir.chdir(app_path)
-    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazzhands/lib/run_tests_for_rspec.js")
-
+    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazzhands/lib/rhino_bridge.js")
+    eval_ignore_result('load("vendor/plugins/jazzhands/lib/run_tests_for_rspec.js");')
   end
 
   def load_suites(suites)
@@ -45,7 +45,10 @@ class RhinoConnection
 
   def eval_ignore_result(js)
     @stdin.puts(js)
-
+    error = error_read
+    if (!error.nil?)
+      raise error
+    end
     result = read
     status, result = result.split(' ')
     result = URI.unescape(result)
@@ -68,8 +71,16 @@ class RhinoConnection
     while true do
       raw_str = @stdout.gets
       return nil unless raw_str
-      puts raw_str[11..-1] if raw_str =~ /^!!!print!!!/ 
+      puts raw_str[11..-1] if raw_str =~ /^!!!print!!!/
       return raw_str[11..-1] if raw_str =~ /^!!!magic!!!/
+    end
+  end
+
+  def error_read
+    error_message = '';
+    while (@stderr.stat.blocks > 0)
+        error_message += @stderr.gets
+        return error_message if @stderr.stat.blocks == 0    
     end
   end
 
@@ -146,7 +157,7 @@ class RemoteResults
     spec_results = results_for(spec_id)
 
     spec_results['messages'].each do |message|
-      p message unless message =~ /^Expectation \d+|^\d+ passed, \d+ failed$/   
+      puts message unless message =~ /^Expectation \d+|^\d+ passed, \d+ failed$/
     end
     Spec::Expectations.fail_with(spec_results['messages'].join("\n")) if (spec_results['result'] != 'passed')
   end

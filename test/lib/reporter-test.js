@@ -13,18 +13,13 @@ describe('JazzHandsReporter', function () {
 
     var reporter = new JazzHandsReporter();
 
-    jasmineRunner.finishCallback = function() {
-      reporter.reportRunnerResults(jasmineRunner);
-    };
+    jasmineInstance.reporter = reporter;
 
-    spyOn(reporter, 'output');
     jasmineRunner.execute();
 
-    expect(reporter.output).wasCalled();
-    var reporterOutput = reporter.output.mostRecentCall.args[0];
-
-
-    expect(reporterOutput).toMatch('passed');
+    expect(reporter.suiteInfoReady).toEqual(true);
+    var specResults = reporter.getResultsForSpec(0);
+    expect(specResults.result).toMatch('passed');
   });
 
   it('should output failure messages if any tests failed', function () {
@@ -42,25 +37,13 @@ describe('JazzHandsReporter', function () {
 
 
     var reporter = new JazzHandsReporter();
-    spyOn(reporter, 'output');
+    jasmineInstance.reporter = reporter;
 
-    jasmineRunner.finishCallback = function() {
-      reporter.reportRunnerResults(jasmineRunner);
-    };
-
-    try {
     jasmineRunner.execute();
-    }
-    catch (e) {
-      //this is here to suck up the failed exception thrown by the reporter
-    }
 
-    expect(reporter.output).wasCalled();
-    var reporterSummaryOutput = reporter.output.argsForCall[0][0];
+    expect(reporter.suiteInfoReady).toEqual(true);
+    var specResults = reporter.getResultsForSpec(0);
 
-    expect(reporterSummaryOutput).toMatch('failed');
-
-    var reporterFailureOutput = reporter.output.argsForCall[1][0];
-    expect(reporterFailureOutput).toMatch('Sample Failing Suite has a failing test');
+    expect(specResults.result).toMatch('failed');
   });
 });
