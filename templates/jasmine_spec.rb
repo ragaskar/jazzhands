@@ -26,7 +26,7 @@ class RhinoConnection
   def connect
     app_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     Dir.chdir(app_path)
-    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazz-hands/dist/run_tests_for_rspec.js")
+    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazzhands/lib/run_tests_for_rspec.js")
 
   end
 
@@ -146,7 +146,7 @@ class RemoteResults
     spec_results = results_for(spec_id)
 
     spec_results['messages'].each do |message|
-      p message unless message =~ /^Expectation \d+/
+      p message unless message =~ /^Expectation \d+|^\d+ passed, \d+ failed$/   
     end
     Spec::Expectations.fail_with(spec_results['messages'].join("\n")) if (spec_results['result'] != 'passed')
   end
