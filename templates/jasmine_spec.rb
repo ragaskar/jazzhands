@@ -26,7 +26,7 @@ class RhinoConnection
   def connect
     app_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     Dir.chdir(app_path)
-    @stdin, @stdout, @stderr = Open3.popen3("java -jar lib/env-js/rhino/js.jar lib/jazz-hands/dist/run_tests_for_rspec.js")
+    @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazz-hands/dist/run_tests_for_rspec.js")
 
   end
 
