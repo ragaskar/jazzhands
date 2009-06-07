@@ -27,7 +27,7 @@ class RhinoConnection
     app_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     Dir.chdir(app_path)
     @stdin, @stdout, @stderr = Open3.popen3("java -jar vendor/plugins/env-js/rhino/js.jar vendor/plugins/jazzhands/lib/rhino_bridge.js")
-    eval_ignore_result('load("vendor/plugins/jazzhands/lib/run_tests_for_rspec.js");')
+    eval_ignore_result('load("vendor/plugins/jazzhands/lib/boot.js");')
   end
 
   def load_suites(suites)

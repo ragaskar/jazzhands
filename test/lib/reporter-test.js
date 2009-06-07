@@ -1,19 +1,22 @@
 describe('JazzHandsReporter', function () {
-  it('should output "All Tests Passed" if all tests passed', function () {
-    var jasmineInstance = new jasmine.Env();
-    var jasmineRunner = new jasmine.Runner(jasmineInstance);
+  var jasmineInstance, jasmineRunner, reporter;
+
+  beforeEach(function () {
+    jasmineInstance = new jasmine.Env();
+    jasmineRunner = new jasmine.Runner(jasmineInstance);
     jasmineInstance.currentRunner = jasmineRunner;
-    jasmineInstance.currentSuite = jasmineInstance.describe('Sample Passing Suite', function () {
-    });
+    reporter = new JazzHandsReporter(jasmineInstance);
+    jasmineInstance.reporter = reporter;
+    jasmineInstance.currentSuite = jasmineInstance.describe('Stub Suite', function () {});
+
+  });
+
+  it('should output "All Tests Passed" if all tests passed', function () {
     jasmineInstance.it('has a passing test',
         function() {
           this.expect(true).toEqual(true);
 
         });
-
-    var reporter = new JazzHandsReporter();
-
-    jasmineInstance.reporter = reporter;
 
     jasmineRunner.execute();
 
@@ -23,21 +26,10 @@ describe('JazzHandsReporter', function () {
   });
 
   it('should output failure messages if any tests failed', function () {
-    var jasmineInstance = new jasmine.Env();
-    var jasmineRunner = new jasmine.Runner(jasmineInstance);
-    jasmineInstance.currentRunner = jasmineRunner;
-
-    jasmineInstance.currentSuite = jasmineInstance.describe('Sample Failing Suite', function () {
-    });
-
     jasmineInstance.it('has a failing test',
         function() {
           this.expect(true).toEqual(false);
         });
-
-
-    var reporter = new JazzHandsReporter();
-    jasmineInstance.reporter = reporter;
 
     jasmineRunner.execute();
 
@@ -45,5 +37,32 @@ describe('JazzHandsReporter', function () {
     var specResults = reporter.getResultsForSpec(0);
 
     expect(specResults.result).toMatch('failed');
+  });
+
+  it('should clean up HTML after each test', function () {
+
+    jasmineInstance.it('sets some DOM',
+        function() {
+          var divEl = document.createElement('div');
+          divEl.id = 'foo';
+          divEl.innerHTML = 'bar';
+          window.document.body.appendChild(divEl);
+          var retrievedEl = window.document.getElementById('foo');
+          this.expect(retrievedEl.id).toEqual('foo');
+          this.expect(retrievedEl.innerHTML).toEqual('bar');
+        });
+
+    jasmineInstance.it('looks for some DOM',
+        function() {
+          var retrievedEl = window.document.getElementById('foo');
+          this.expect(retrievedEl).toBeFalsy();
+        });
+
+    jasmineRunner.execute();
+
+    var specResults = reporter.getResultsForSpec(0);
+    expect(specResults.result).toMatch('passed');
+    specResults = reporter.getResultsForSpec(1);
+    expect(specResults.result).toMatch('passed');
   });
 });

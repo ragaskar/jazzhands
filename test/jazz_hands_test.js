@@ -1,5 +1,7 @@
 var runJazzHandsReporterTest = function () {
   load('../env-js/dist/env.rhino.js');
+  window.location = '../jazzhands/lib/blank.html';
+  
   load('../jasmine/src/base.js');
   load('../jasmine/src/util.js');
   load('../jasmine/src/Env.js');
@@ -17,6 +19,7 @@ var runJazzHandsReporterTest = function () {
   load('../jazzhands/lib/json2.js');
   load('../jazzhands/lib/reporter.js');
   load('../jazzhands/test/lib/reporter-test.js');
+
   jasmine.getEnv().reporter = new JazzHandsReporter(jasmine.getEnv());
   jasmine.getEnv().execute();
   var results = jasmine.getEnv().reporter.specResults;
@@ -24,20 +27,32 @@ var runJazzHandsReporterTest = function () {
   var totalCount = 0;
   var passedCount = 0;
   var failedCount = 0;
-  for (specId in results) {
-    totalCount++;
-    var result = results[specId];
-    if (result.result == 'failed') {
-      failedCount++;
-      fails.push(result.messages.join("\n"));
-    } else {
-      passedCount++;
+  var suiteInfo = jasmine.getEnv().reporter.getSuiteInfo();
+  
+  var collectMessages = function (suiteOrSpecs) {
+    for (var j = 0; j < suiteOrSpecs.length; j++) {
+      var suiteOrSpec = suiteOrSpecs[j];
+      if (suiteOrSpec.type == 'spec') {
+        totalCount++;
+        var result = results[suiteOrSpec.id];
+        if (result.result == 'failed') {
+          failedCount++;
+          fails.push(suiteOrSpec.name + " FAILED \n" + result.messages.join("\n"));
+        } else {
+          passedCount++;
+        }
+      }
+      else {
+        collectMessages(suiteOrSpec.children);
+      }
     }
-  }
+  };
+  collectMessages(suiteInfo);
+
   if (fails.length > 0) {
-    print(fails.join("\n"));
+    print("\n" + fails.join("\n\n")+"\n");
   }
-  print('JazzHandsReporter: '+ totalCount + ' tests: ' + passedCount + ' passed, ' + failedCount + ' failed');
+  print('JazzHandsReporter: ' + totalCount + ' tests: ' + passedCount + ' passed, ' + failedCount + ' failed');
 };
 
 runJazzHandsReporterTest();
