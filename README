@@ -16,6 +16,19 @@ Example
 rake javascript
 rake spec
 
+Some Helpful Hints
+==================
+
+Jazzhands is still very much in its infancy. Good patterns for unit and integration test usage are still being developed. 
+
+* document.ready/onLoad events do not auto-fire (according to http://github.com/thatcher/env-js/). You may need to fire these events manually (for example, calling jQuery.ready() in your test).
+
+* The document.body.innerHTML is set to an empty string after each test, but we do not currently reload the document. This may produce interesting state bugs if you are setting vars in the window. 
+
+* Use console.log or console.error to print out debugging info in your source files or tests.
+
+* Use jasmine.include or load to include files you want to test in your suites. These files currently load into the document context and their unloading is not managed by jazzhands.
+
 Big thanks to Christian Williams for his help with Rhino integration.
 
 Copyright (c) 2009 Rajan Agaskar, released under the MIT license
