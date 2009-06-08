@@ -29,6 +29,8 @@ Jazzhands is still very much in its infancy. Good patterns for unit and integrat
 
 * Use jasmine.include or load to include files you want to test in your suites. These files currently load into the document context and their unloading is not managed by jazzhands.
 
+* JSON handling is not so great -- we try to use the ActiveSupport::JSON if available, otherwise we require the JSON gem. These operate differently (and yet in the same namespace!), so if the wrong one is loaded in jasmine_spec.rb you may find unexpected fails occuring in your suites (that deal with JSON). 
+
 Big thanks to Christian Williams for his help with Rhino integration.
 
 Copyright (c) 2009 Rajan Agaskar, released under the MIT license
