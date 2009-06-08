@@ -3,8 +3,7 @@ require 'rubygems'
 
 class RhinoConnection
   require 'socket'
-  if (defined? ActiveSupport::JSON)
-    #way to go, guys, way to go! 
+  unless (defined? ActiveSupport::JSON)
     require 'json'
   end
 
